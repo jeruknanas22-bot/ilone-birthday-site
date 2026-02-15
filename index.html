@@ -4,12 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy Birthday</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-
 body{
     background:linear-gradient(135deg,#e6f2ff,#f8fbff);
     height:100vh;
@@ -51,7 +48,9 @@ body::after{
     display:flex;
     justify-content:center;
     align-items:center;
+    flex-direction:column;
     padding:20px;
+    position:relative;
 }
 
 /* envelope */
@@ -61,6 +60,7 @@ body::after{
     position:relative;
     cursor:pointer;
     perspective:1000px;
+    margin-bottom:20px;
 }
 .env-body{
     width:100%;
@@ -229,7 +229,7 @@ h1{
 .final-letter{font-size:15px; color:#4a6b8a; line-height:1.8; animation:fadeInLetter 2s ease forwards; opacity:0;}
 @keyframes fadeInLetter{to{opacity:1;}}
 
-/* buttons */
+/* buttons inside slide */
 button{
     padding:10px 22px;
     border:none;
@@ -237,15 +237,31 @@ button{
     background:#bcdcff;
     color:#2d4f73;
     cursor:pointer;
-    margin-top:20px;
+    margin-top:15px;
 }
 button:hover{background:#9dcfff;}
-.nav{
-    position:absolute;
-    bottom:430px;
-    left:50%;
-    transform:translateX(-50%);
-    display:none;
+.slide button.next-btn{
+    position:relative; /* ikut flow slide */
+    margin-top:20px;
+}
+
+/* stack tombol vertikal di slide 3 */
+.button-group {
+    display: flex;
+    flex-direction: column; /* vertikal */
+    align-items: center;    /* center horizontally */
+    gap: 12px;              /* jarak antar tombol */
+    margin-top: 20px;       /* jarak dari vinyl */
+}
+
+/* responsive adjustment */
+@media(max-width:480px){
+    .postcard{padding:20px;}
+    .envelope{width:200px;height:130px;}
+    .cake{width:120px;height:80px;}
+    .vinyl{width:150px;height:150px;}
+    .vinyl img{width:70px;height:70px;}
+    button{padding:8px 18px;font-size:14px;}
 }
 </style>
 </head>
@@ -260,9 +276,9 @@ button:hover{background:#9dcfff;}
         <div class="envelope" onclick="openEnvelope(this)">
             <div class="env-body"></div>
             <div class="env-flap"></div>
-            <div class="click-text">click me</div>
             <div class="letter">Before we go any further… this is for you.</div>
         </div>
+        <!-- tombol Next dihapus -->
     </div>
 </div>
 
@@ -271,6 +287,7 @@ button:hover{background:#9dcfff;}
     <div class="postcard">
         <h1>Happy Birthday</h1>
         <div class="message" id="typing-text"></div>
+        <button class="next-btn" onclick="next()">Next</button>
     </div>
 </div>
 
@@ -281,7 +298,10 @@ button:hover{background:#9dcfff;}
         <div class="vinyl">
             <img src="cover.jpg">
         </div>
-        <button onclick="toggleMusic()">Play / Pause</button>
+        <div class="button-group">
+    <button onclick="toggleMusic()">Play / Pause</button>
+    <button class="next-btn" onclick="next()">Next</button>
+</div>
         <audio id="music" loop>
             <source src="song.mp3" type="audio/mp3">
         </audio>
@@ -292,10 +312,11 @@ button:hover{background:#9dcfff;}
 <div class="slide">
     <div class="postcard">
         <h1>Sweet Messages</h1>
-        <img src="foto.png" class="photo-simple">
+        <img src="foto.jpg" class="photo-simple">
         <div class="message">
             You are truly special to everyone around you. Wishing you moments of joy and warmth today.
         </div>
+        <button class="next-btn" onclick="next()">Next</button>
     </div>
 </div>
 
@@ -311,6 +332,7 @@ button:hover{background:#9dcfff;}
         <div class="message">
             Close your eyes… and click the flame to blow the candle.
         </div>
+        <button class="next-btn" onclick="next()">Next</button>
     </div>
 </div>
 
@@ -324,6 +346,7 @@ button:hover{background:#9dcfff;}
             <div class="memory-star" onclick="revealMemory(this,'That laugh I never forget.')">★</div>
         </div>
         <div class="memory-text" id="memoryText"></div>
+        <button class="next-btn" onclick="next()">Next</button>
     </div>
 </div>
 
@@ -341,10 +364,6 @@ button:hover{background:#9dcfff;}
 
 </div>
 
-<div class="nav">
-    <button onclick="next()">Next</button>
-</div>
-
 <script>
 let current=0;
 const totalSlides=document.querySelectorAll(".slide").length;
@@ -357,12 +376,6 @@ function next(){
         document.getElementById("container").style.transform="translateX(-"+current*100+"vw)";
         if(current === 1 && index===0){typeEffect();}
     }
-    // hide next button if last slide
-    if(current === totalSlides-1){
-        document.querySelector(".nav").style.display="none";
-    } else {
-        document.querySelector(".nav").style.display="block";
-    }
 }
 
 function toggleMusic(){
@@ -372,7 +385,14 @@ function toggleMusic(){
 
 function openEnvelope(el){
     el.classList.add("open");
-    document.querySelector(".nav").style.display="block";
+
+    // tambahkan tombol Next hanya untuk slide 1
+    const slide1 = el.parentElement; // div slide 1
+    let nextBtn = document.createElement("button");
+    nextBtn.className = "next-btn";
+    nextBtn.innerText = "Next";
+    nextBtn.onclick = next;
+    slide1.appendChild(nextBtn);
 }
 
 function typeEffect(){
@@ -415,6 +435,5 @@ for(let i=0;i<70;i++){
     document.body.appendChild(s);
 }
 </script>
-
 </body>
 </html>
